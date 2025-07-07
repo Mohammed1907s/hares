@@ -1,0 +1,111 @@
+import 'package:get/get.dart';
+import 'package:hares/models/numbers_links_test.dart';
+import 'package:hares/utils/app_color.dart';
+import 'package:hares/utils/constants.dart';
+
+class VerifyController extends GetxController{
+
+
+  List<NumbersLinksTest> listVerify = [
+    NumbersLinksTest(
+      mainIcon: '${Const.icons}icon_safe_white.svg',
+      title: 'عبد الله الخـــالدي',
+      subIcon: '${Const.icons}icon_safe.svg',
+      typeName: 'أمن',
+      date: 'شعبان 07',
+      number: '(2)',
+      typeArrowIcon: '${Const.icons}icon_arrow_up.svg',
+      typeIcon: '${Const.icons}icon_phone_field.svg',
+      type: Const.KEY_LATEST,
+      color: AppColors.colorAppSub,),
+    NumbersLinksTest(
+        mainIcon: '${Const.icons}icon_suspicious_white.svg',
+        title: 'محمد نبيل القاضي',
+        subIcon: '${Const.icons}icon_suspicious.svg',
+        typeName: 'مشبوه',
+        date: 'رمضان 08',
+        number: '(8)',
+        typeArrowIcon: '${Const.icons}icon_arrow_down.svg',
+        typeIcon: '${Const.icons}icon_suspicious_info.svg',
+        type: Const.KEY_LATEST,
+        color: AppColors.colorRedBG),
+    NumbersLinksTest(
+        mainIcon: '${Const.icons}icon_unknown_white.svg',
+        title: '+966 4522 588 788',
+        subIcon: '${Const.icons}icon_unknown.svg',
+        typeName: 'غير معروف',
+        date: 'شوال 22',
+        number: '(5)',
+        typeArrowIcon: '${Const.icons}icon_arrow_up_black.svg',
+        typeIcon: '${Const.icons}icon_suspicious_info.svg',
+        type: Const.KEY_LATEST,
+        color: AppColors.colorUnknow),
+    NumbersLinksTest(
+      mainIcon: '${Const.icons}icon_link.svg',
+      title: '...https://www.website.com',
+      subIcon: '${Const.icons}icon_safe.svg',
+      typeName: 'أمن',
+      date: 'شعبان 07',
+      number: '',
+      typeArrowIcon: '',
+      typeIcon: '${Const.icons}icon_arrow_link.svg',
+      type: Const.KEY_LATEST,
+      color: AppColors.colorAppMain,),
+    NumbersLinksTest(
+        mainIcon: '${Const.icons}icon_suspicious_white.svg',
+        title: '...https://www.website.com',
+        subIcon: '${Const.icons}icon_suspicious.svg',
+        typeName: 'مشبوه',
+        date: 'رمضان 08',
+        number: '',
+        typeArrowIcon: '',
+        typeIcon: '${Const.icons}icon_suspicious_info.svg',
+        type: Const.KEY_LATEST,
+        color: AppColors.colorRedBG),
+    NumbersLinksTest(
+        mainIcon: '${Const.icons}icon_unknown_white.svg',
+        title: '+966 4522 588 788',
+        subIcon: '${Const.icons}icon_unknown.svg',
+        typeName: 'غير معروف',
+        date: 'شوال 22',
+        number: '',
+        typeArrowIcon: '',
+        typeIcon: '${Const.icons}icon_suspicious_info.svg',
+        type: Const.KEY_LATEST,
+        color: AppColors.colorUnknow),
+    NumbersLinksTest(
+        mainIcon: '${Const.icons}icon_unknown_white.svg',
+        title: '...https://www.website.com',
+        subIcon: '${Const.icons}icon_unknown.svg',
+        typeName: 'غير معروف',
+        date: 'شوال 22',
+        number: '',
+        typeArrowIcon: '',
+        typeIcon: '${Const.icons}icon_suspicious_info.svg',
+        type: Const.KEY_LATEST,
+        color: AppColors.colorUnknow),
+    NumbersLinksTest(
+      mainIcon: '${Const.icons}icon_link.svg',
+      title: '...https://www.website.com',
+      subIcon: '${Const.icons}icon_safe.svg',
+      typeName: 'أمن',
+      date: 'شعبان 07',
+      number: '',
+      typeArrowIcon: '',
+      typeIcon: '${Const.icons}icon_arrow_link.svg',
+      type: Const.KEY_LATEST,
+      color: AppColors.colorAppMain,),
+    NumbersLinksTest(
+      mainIcon: '${Const.icons}icon_safe_white.svg',
+      title: 'عبد الله الخـــالدي',
+      subIcon: '${Const.icons}icon_safe.svg',
+      typeName: 'أمن',
+      date: 'شعبان 07',
+      number: '(2)',
+      typeArrowIcon: '${Const.icons}icon_arrow_up.svg',
+      typeIcon: '${Const.icons}icon_phone_field.svg',
+      type: Const.KEY_LATEST,
+      color: AppColors.colorAppSub,),
+  ];
+
+}
