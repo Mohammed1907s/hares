@@ -5,8 +5,10 @@ import 'package:hares/controllers/verify_controller.dart';
 import 'package:hares/utils/app_color.dart';
 import 'package:hares/utils/app_text.dart';
 import 'package:hares/utils/constants.dart';
+import 'package:hares/widget/custom_animation_loading.dart';
 import 'package:hares/widget/custom_text_field.dart';
 import 'package:hares/widget/screens/numbers_links_item.dart';
+import 'package:hares/widget/screens/report_item.dart';
 
 class VerifyPage extends StatelessWidget {
   final _controller = Get.put(VerifyController());
@@ -28,29 +30,53 @@ class VerifyPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 18),
+                padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
                 decoration: BoxDecoration(
-                    color: AppColors.colorBG,
-                    borderRadius: BorderRadius.circular(18)),
+
+                    borderRadius: BorderRadius.circular(50)),
                 child: Row(
                   children: [
                     const SizedBox(width: 12),
-                    Expanded(child: AppText.medium(text: 'enter_search_number_link', fontSize: 14)),
+                    Expanded(
+                      child: CustomTextField(
+                          controller: _controller.searchController,
+                          label: 'enter_search_number_link',
+                          inputType: TextInputType.text,
+                          hint: 'enter_search_number_link',
+                          isPassword: false,
+                          borderRadius: 20,
+                          borderColor: AppColors.colorTextSub1,
+                          onChange: (word) {
+                            _controller.getReports(search: word.toString());
+                            _controller.update();
+                          },
+                          onValid: () {}),
+                    ),
+                    // Expanded(child: AppText.medium(text: 'enter_search_number_link', fontSize: 14)),
                     // Expanded(child: CustomTextField(controller: TextEditingController(), label: '', hint: 'enter_search_number_link', onValid: (search) {})),
-                    const SizedBox(width: 16),
-                    SvgPicture.asset('${Const.icons}icon_camera.svg'),
-                    const SizedBox(width: 16),
+                    // const SizedBox(width: 16),
+                    // SvgPicture.asset('${Const.icons}icon_camera.svg'),
+                    // const SizedBox(width: 16),
                   ],
                 ),
               ),
               const SizedBox(height: 28),
               AppText.medium(text: 'search_result', fontSize: 14, fontWeight: FontWeight.w800),
               const SizedBox(height: 20),
-             ListView.builder(
-               shrinkWrap: true,
-                 physics: const NeverScrollableScrollPhysics(),
-                 itemCount: _controller.listVerify.length,
-                 itemBuilder: (context, index) => NumbersLinksItem(numberLink: _controller.listVerify[index]))
+             FutureBuilder(future: _controller.getReports(), builder: (context, snapshot) {
+               if(snapshot.connectionState == ConnectionState.done){
+                 return  GetBuilder<VerifyController>(builder: (controller) => ListView.builder(
+                     shrinkWrap: true,
+                     physics: const NeverScrollableScrollPhysics(),
+                     itemCount: _controller.listReports.length,
+                     itemBuilder: (context, index) => ReportItem(report: _controller.listReports[index])));
+               }else if(snapshot.connectionState == ConnectionState.waiting){
+                 return const Center(child: CustomAnimationLoading(color: AppColors.colorAppSub));
+               }else {
+                 return Container();
+               }
+             }),
+
             ],
           ),
         ),

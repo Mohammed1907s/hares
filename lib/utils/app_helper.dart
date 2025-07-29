@@ -8,6 +8,7 @@ import 'package:flutter_sliding_toast/flutter_sliding_toast.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:hares/models/user.dart';
 import 'package:hares/utils/app_color.dart';
 import 'package:hares/utils/app_text.dart';
 import 'package:hares/utils/constants.dart';
@@ -65,6 +66,14 @@ class AppHelper {
     return null;
   }
 
+  static User? getCurrentUser() {
+    if (Caching.getUserData(key: Const.KEY_USER_DATA) != null) {
+      return Caching.getUserData(key: Const.KEY_USER_DATA);
+    } else {
+      return null;
+    }
+  }
+
 
   static RegExp emailValidate() {
     return RegExp(
@@ -83,41 +92,44 @@ class AppHelper {
         : /* TODO TABLET */ 700;
   }
 
-  static Future<void> launcherUrl(BuildContext context, String url) async {
+  static Future<void> launcherUrl(BuildContext context, {required  String url}) async {
     log('LINK: $url');
     if (url.isNotEmpty && url.contains('http')) {
       if (!await launchUrl(Uri.parse(url))) {
         throw Exception('Could not launch $url');
       }
     } else {
+      showCustomToast(context: context,
+          title: 'valid_link',
+          isSuccess: false);
       // AppHelper.showCustomToast(
       //     context: context, title: 'valid_link', isSuccess: false);
     }
   }
   //
-  // static Future<void> launchWhatsapp(BuildContext context,
-  //     {required String phoneOrLink}) async {
-  //   log('NUMBER: $phoneOrLink');
-  //   if (phoneOrLink.contains('http')) {
-  //     launcherUrl(context, phoneOrLink);
-  //   } else {
-  //     var androidUrl = "whatsapp://send?phone=$phoneOrLink&text=Hi, I need some help";
-  //     var iosUrl = "https://wa.me/$phoneOrLink?text=${Uri.parse('Hi, I need some help')}";
-  //     try {
-  //       if (Platform.isIOS) {
-  //         await launchUrl(Uri.parse(iosUrl));
-  //       }
-  //       else {
-  //         await launchUrl(Uri.parse(androidUrl));
-  //       }
-  //     } on Exception {
-  //       AppHelper.showCustomToast(context: context,
-  //           title: 'whatsapp_not_installed',
-  //           isSuccess: false);
-  //       // EasyLoading.showError('WhatsApp is not installed.');
-  //     }
-  //   }
-  // }
+  static Future<void> launchWhatsapp(BuildContext context,
+      {required String phoneOrLink}) async {
+    log('NUMBER: $phoneOrLink');
+    if (phoneOrLink.contains('http')) {
+      launcherUrl(context, url: phoneOrLink);
+    } else {
+      var androidUrl = "whatsapp://send?phone=$phoneOrLink&text=Hi, I need some help";
+      var iosUrl = "https://wa.me/$phoneOrLink?text=${Uri.parse('Hi, I need some help')}";
+      try {
+        if (Platform.isIOS) {
+          await launchUrl(Uri.parse(iosUrl));
+        }
+        else {
+          await launchUrl(Uri.parse(androidUrl));
+        }
+      } on Exception {
+        AppHelper.showCustomToast(context: context,
+            title: 'whatsapp_not_installed',
+            isSuccess: false);
+        // EasyLoading.showError('WhatsApp is not installed.');
+      }
+    }
+  }
 
   static Future saveDeviceName() async {
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
@@ -141,67 +153,11 @@ class AppHelper {
       return '';
     }
   }
-  //
-  // static void showSnackBar(String title, String message,
-  //     Color backgroundColor) {
-  //   Get.snackbar(title.tr, message.tr,
-  //       padding: const EdgeInsets.only(bottom: 0, top: 14, right: 16, left: 16),
-  //       margin: const EdgeInsets.only(bottom: 20, left: 32, right: 32),
-  //       snackPosition: SnackPosition.BOTTOM,
-  //       backgroundColor: backgroundColor,
-  //       colorText: Colors.white);
-  // }
-  //
-  // static void showCustomToast({required BuildContext context,
-  //   required String title,
-  //   bool? isSuccess,
-  //   Widget? icon,
-  //   Color textColor = AppColors.colorAppMain}) {
-  //   InteractiveToast.slide(
-  //     context,
-  //     leading: Container(
-  //         margin: const EdgeInsetsDirectional.only(start: 8, end: 8),
-  //         width: 40,
-  //         height: 40,
-  //         child: TrailingWidget(icon: icon, isSuccess: isSuccess)),
-  //     title: AppText.medium(
-  //         text: title,
-  //         color: textColor,
-  //         maxline: 2,
-  //         fontSize: 13,
-  //         fontWeight: FontWeight.w700),
-  //     toastStyle: const ToastStyle(titleLeadingGap: 10),
-  //     toastSetting: const SlidingToastSetting(
-  //       animationDuration: Duration(seconds: 1),
-  //       displayDuration: Duration(seconds: 2),
-  //       toastStartPosition: ToastPosition.top,
-  //       toastAlignment: Alignment.topCenter,
-  //     ),
-  //   );
-  // }
 
   static Future showLoadingDialog(BuildContext context) {
     return showDialog(
         context: context, builder: (con) => const CustomLoading());
   }
-
-  // static checkInternetConnection(BuildContext context) {
-  //
-  //   final listener = InternetConnection().onStatusChange.listen((
-  //       InternetStatus status) {
-  //     switch (status) {
-  //       case InternetStatus.connected:
-  //       // The internet is now connected
-  //         showCustomToast(context: context, title: 'internet_connected', isSuccess: true);
-  //         break;
-  //       case InternetStatus.disconnected:
-  //       // The internet is now disconnected
-  //         showCustomToast(context: context, title: 'internet_disconnected', isSuccess: false);
-  //         break;
-  //     }
-  //   });
-  // }
-
 
   static RxBool checkInternetConnectionStatus() {
     Map _source = {ConnectivityResult.none: false};

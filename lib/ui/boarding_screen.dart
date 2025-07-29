@@ -9,6 +9,7 @@ import 'package:hares/controllers/boarding_controller.dart';
 import 'package:hares/utils/app_color.dart';
 import 'package:hares/utils/app_text.dart';
 import 'package:hares/utils/constants.dart';
+import 'package:hares/widget/custom_animation_loading.dart';
 import 'package:hares/widget/custom_button.dart';
 import 'package:hares/widget/screens/page_view_boardings.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -28,30 +29,38 @@ class BoardingScreen extends StatelessWidget {
       body: Stack(
         alignment: AlignmentDirectional.bottomCenter,
         children: [
-          GetBuilder<BoardingController>(
-              builder: (controller) => PageView.builder(
-                controller: controller.pageController,
-                physics: const BouncingScrollPhysics(),
-                itemCount: controller.listBoarding.length,
-                onPageChanged: (index) {
-                  if (index == controller.listBoarding.length - 1) {
-                    controller.isLast.value = true;
-                  } else {
-                    controller.isLast.value = false;
-                  }
-                  controller.update();
-                },
-                itemBuilder: (context, index) => Container(
-                  clipBehavior: Clip.antiAlias,
-                  decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20)
-                      )),
-                  child: PageViewBoardings(
-                      boarding: controller.listBoarding[index]),
-                ),
-              )),
+          FutureBuilder(future: _controller.getSplashes(), builder: (context, snapshot) {
+            if(snapshot.connectionState == ConnectionState.done){
+              return GetBuilder<BoardingController>(
+                  builder: (controller) => PageView.builder(
+                    controller: controller.pageController,
+                    physics: const BouncingScrollPhysics(),
+                    itemCount: controller.listSplashes.length,
+                    onPageChanged: (index) {
+                      if (index == controller.listSplashes.length - 1) {
+                        controller.isLast.value = true;
+                      } else {
+                        controller.isLast.value = false;
+                      }
+                      controller.update();
+                    },
+                    itemBuilder: (context, index) => Container(
+                      clipBehavior: Clip.antiAlias,
+                      decoration: const BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(20),
+                              topRight: Radius.circular(20)
+                          )),
+                      child: PageViewBoardings(
+                          splash: controller.listSplashes[index]),
+                    ),
+                  ));
+            }else if(snapshot.connectionState == ConnectionState.waiting){
+              return const Center(child: CustomAnimationLoading());
+            }else {
+              return Container();
+            }
+          }),
           Container(
             color: AppColors.colorAppMain,
             child: GetBuilder<BoardingController>(

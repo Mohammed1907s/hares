@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:hares/controllers/settings_controller.dart';
 import 'package:hares/utils/app_color.dart';
 import 'package:hares/utils/app_text.dart';
+import 'package:hares/widget/custom_animation_loading.dart';
 
 class PolicyScreen extends StatelessWidget {
 
@@ -18,16 +19,26 @@ class PolicyScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: AppText.medium(text: 'policy_', color: AppColors.colorAppMain, fontWeight: FontWeight.w800),
-        // leading: GestureDetector(
-        //     onTap: () => Navigator.pop(context),
-        //     child: SvgPicture.asset('${Const.icons}icon_back.svg', fit: BoxFit.scaleDown)),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
-        child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: AppText.medium(text: '', maxline: 100, fontSize: 14, fontWeight: FontWeight.w700)),
-      )
+      body: FutureBuilder(future: _controller.getSettings(), builder: (context, snapshot) {
+        if(snapshot.connectionState == ConnectionState.done){
+          return Padding(
+            padding:
+            const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
+            child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: AppText.medium(
+                    text: _controller.policy.description ?? '',
+                    maxline: 100,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700)),
+          );
+        }else if(snapshot.connectionState == ConnectionState.waiting){
+          return const Center(child: CustomAnimationLoading(color: AppColors.colorAppSub));
+        }else {
+          return Container();
+        }
+      })
     );
   }
 }

@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:hares/api/api_requestes.dart';
 import 'package:hares/controllers/home_controller.dart';
 import 'package:hares/models/language.dart';
+import 'package:hares/models/settings/settings.dart';
 import 'package:hares/models/settings_items.dart';
 import 'package:hares/routes/routes.dart';
 import 'package:hares/utils/app_color.dart';
@@ -18,9 +19,18 @@ import 'package:hares/widget/custom_button.dart';
 
 class SettingsController extends GetxController {
 
+  SettingsData terms = SettingsData();
+  SettingsData policy = SettingsData();
+  SettingsData aboutUs = SettingsData();
+  Setting setting = Setting();
+
   List<SettingsItems> listSettings = [
     SettingsItems(
         title: 'languages', name: 'language', icon: 'icon_language.svg'),
+    SettingsItems(
+        title: 'change_password',
+        name: 'changePassword',
+        icon: 'icon_language.svg'),
     // SettingsItems(
     //     title: 'call_center', name: 'callCenter', icon: 'icon_call_center.svg'),
     SettingsItems(
@@ -29,6 +39,8 @@ class SettingsController extends GetxController {
         icon: 'icon_terms.svg'),
     SettingsItems(
         title: 'policy', name: 'policy', icon: 'icon_privacy.svg'),
+    SettingsItems(
+        title: 'about', name: 'about', icon: 'icon_privacy.svg'),
     SettingsItems(
         title: 'rate_app', name: 'rateApp', icon: 'icon_rate.svg'),
     SettingsItems(
@@ -363,16 +375,29 @@ class SettingsController extends GetxController {
   }
 
   Future<void> logout() async {
+
     APIRequestes.logout()
     .then((onValue) {
       if(onValue != null){
         HomeController home = Get.find();
         Caching.clearData(key: Const.KEY_USER_TOKEN);
+        Caching.clearData(key: Const.KEY_USER_DATA);
         home.getCurrentNavIndex(navIndex: 0);
         Get.offAndToNamed(Routes.login);
       }
     });
+  }
 
+  Future<void> getSettings() async {
+    await APIRequestes.getSettings()
+        .then((sett) {
+          if(sett != null) {
+            terms = sett.result!.condition!;
+            policy = sett.result!.policy!;
+            aboutUs = sett.result!.aboutUs!;
+            setting = sett.result!.setting!;
+          }
+    });
   }
 
 }

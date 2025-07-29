@@ -54,13 +54,13 @@ class LoginController extends GetxController {
     update();
   }
 
-  void login() async {
+  void login(BuildContext context) async {
     isLoading(true);
-    await APIRequestes.login(email: emailPhoneController.text, password: passwordController.text)
+    await APIRequestes.login(context, email: emailPhoneController.text, password: passwordController.text)
         .then((auth) {
           if(auth != null){
             isLoading(false);
-            Caching.saveUserToken(token: auth.token!);
+            Caching.saveUserToken(token: auth.result!.token!);
             Get.toNamed(Routes.home);
           }else {
             isLoading(false);

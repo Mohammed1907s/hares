@@ -10,6 +10,9 @@ class SplashController extends GetxController {
 
   @override
   void onInit() {
+    // Caching.clearData(key: Const.KEY_BOARDING);
+    // Caching.clearData(key: Const.KEY_USER_TOKEN);
+    // Caching.clearData(key: Const.KEY_USER_DATA);
     startApp();
     super.onInit();
   }

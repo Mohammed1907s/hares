@@ -27,6 +27,7 @@ class CustomTextField extends StatelessWidget {
   final int maxLines;
   final int minLines;
   final double borderRadius;
+  final Color borderColor;
 
   CustomTextField({
     super.key,
@@ -48,7 +49,7 @@ class CustomTextField extends StatelessWidget {
     this.maxLines = 1,
     this.minLines = 1,
     this.borderRadius = 18,
-
+    this.borderColor = AppColors.colorTextSub2,
   });
 
   @override
@@ -56,7 +57,7 @@ class CustomTextField extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(top: 16),
       child: TextFormField(
-        onTap: onTab,
+          onTap: onTab,
           controller: controller,
           obscureText: isObscureText,
           keyboardType: inputType,
@@ -70,8 +71,8 @@ class CustomTextField extends StatelessWidget {
               labelText: label.tr,
               labelStyle: const TextStyle(
                   fontFamily: Const.appFont,
-              fontSize: 14,
-              fontWeight: FontWeight.w500, color: AppColors.colorBlack),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500, color: AppColors.colorBlack),
               hintText: hint.tr,
 
               hintStyle: const TextStyle(
@@ -81,17 +82,17 @@ class CustomTextField extends StatelessWidget {
               hintMaxLines: 1,
               suffixIcon: isPassword
                   ? IconButton(
-                      icon: suffixIcon!,
-                      onPressed: onShowPassword)
+                  icon: suffixIcon!,
+                  onPressed: onShowPassword)
                   : icon,
               border: OutlineInputBorder(
-                borderSide: const BorderSide(color: AppColors.colorAppMain),
-                  borderRadius: BorderRadius.circular(borderRadius),
+                borderSide: BorderSide(color: borderColor),
+                borderRadius: BorderRadius.circular(borderRadius),
               ),
               focusedBorder: OutlineInputBorder(
-                borderSide: const BorderSide(color: AppColors.colorAppMain),
-                  borderRadius: BorderRadius.circular(borderRadius),
-                  )),
+                borderSide: BorderSide(color: borderColor),
+                borderRadius: BorderRadius.circular(borderRadius),
+              )),
           onChanged: (newValue) => onChange!(newValue),
           validator: (value) => onValid!(value)),
     );

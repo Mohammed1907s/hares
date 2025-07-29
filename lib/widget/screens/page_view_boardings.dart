@@ -3,17 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hares/controllers/boarding_controller.dart';
 import 'package:hares/models/boaringd.dart';
+import 'package:hares/models/splash.dart';
 import 'package:hares/utils/app_color.dart';
 import 'package:hares/utils/app_text.dart';
 import 'package:hares/utils/constants.dart';
+import 'package:hares/widget/custom_cached_image.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class PageViewBoardings extends StatelessWidget {
 
   final _controller = Get.put(BoardingController());
-  Boardings boarding;
+  SplashData splash;
 
-  PageViewBoardings({super.key, required this.boarding});
+  PageViewBoardings({super.key, required this.splash});
 
 
   @override
@@ -24,16 +26,17 @@ class PageViewBoardings extends StatelessWidget {
         children: [
           Container(
               clipBehavior: Clip.antiAlias,
-            width: double.infinity,
+              width: double.infinity,
+              height: 380,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20)
             ),
-            child: Image.asset('${Const.images}${boarding.imageUrl}', width: 200, height: 420)
+            child: CustomCachedImage(imageUrl: splash.imageUrl ?? '')
           ),
-          const SizedBox(height: 28),
+          const SizedBox(height: 50),
           SmoothPageIndicator(
             controller: _controller.pageController,
-            count: 3,
+            count: _controller.listSplashes.length,
             effect: CustomizableEffect(
               dotDecoration: DotDecoration(
                 height: 10,
@@ -61,13 +64,13 @@ class PageViewBoardings extends StatelessWidget {
             },
           ),
           const SizedBox(height: 28),
-          AppText.medium(text: boarding.title ?? '', color: AppColors.colorWhite, fontSize: 22, fontWeight: FontWeight.w900),
-          const SizedBox(height: 16),
-          AppText.medium(text: boarding.subTitle ?? '', color: AppColors.colorWhite, fontSize: 22, fontWeight: FontWeight.w900),
+          AppText.medium(text: splash.title ?? '', color: AppColors.colorWhite, fontSize: 22, fontWeight: FontWeight.w900),
+          // const SizedBox(height: 16),
+          // AppText.medium(text: splash.title ?? '', color: AppColors.colorWhite, fontSize: 22, fontWeight: FontWeight.w900),
           const SizedBox(height: 16),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: AppText.medium(text: boarding.content ?? '', color: AppColors.colorWhite, fontSize: 16, fontWeight: FontWeight.w500,
+            child: AppText.medium(text: splash.description ?? '', color: AppColors.colorWhite, fontSize: 16, fontWeight: FontWeight.w500,
                 textAlign: TextAlign.center,
                 maxline: 2),
           ),

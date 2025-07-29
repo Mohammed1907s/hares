@@ -12,6 +12,7 @@ class RegisterController extends GetxController {
 
   late TextEditingController nameController;
   late TextEditingController emailController;
+  late TextEditingController phoneController;
   late TextEditingController passwordController;
   late TextEditingController confirmPasswordController;
   RxBool isLoading = false.obs;
@@ -26,6 +27,7 @@ class RegisterController extends GetxController {
   void onInit() {
     nameController = TextEditingController();
     emailController = TextEditingController();
+    phoneController = TextEditingController();
     passwordController = TextEditingController();
     confirmPasswordController = TextEditingController();
     super.onInit();
@@ -36,6 +38,7 @@ class RegisterController extends GetxController {
   void dispose() {
     nameController.dispose();
     emailController.dispose();
+    phoneController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
     super.dispose();
@@ -57,17 +60,23 @@ class RegisterController extends GetxController {
 
   void register() async {
     isLoading(true);
+
     await APIRequestes.register(
         name: nameController.text,
         email: emailController.text,
+        phone: phoneController.text,
         password: passwordController.text,
         confirmPassword: confirmPasswordController.text)
         .then((auth) {
       if(auth != null){
         isLoading(false);
+        // Caching.saveUserToken(token: auth.result!.token!);
+        // Caching.saveUserData(user: auth.result!.user!);
+        Caching.saveAppData(key: Const.KEY_TEXT_CONFIRM, value: Const.KEY_TEXT_CONFIRM_REGISTER);
+        Caching.saveAppData(key: Const.KEY_VERIFIED_TOKEN, value: auth.result!.token!);
+        Caching.saveAppData(key: Const.KEY_VERIFIED_EMAIL, value: auth.result!.user!.email!);
 
-        Caching.saveUserToken(token: auth.data!);
-        Get.toNamed(Routes.home);
+        Get.offAndToNamed(Routes.verification);
       }else {
         isLoading(false);
 

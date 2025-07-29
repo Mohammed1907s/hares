@@ -4,9 +4,12 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:hares/api/api_requestes.dart';
+import 'package:hares/models/categories.dart';
 import 'package:hares/models/numbers_links_test.dart';
 import 'package:hares/models/type_slected.dart';
 import 'package:hares/utils/app_color.dart';
+import 'package:hares/utils/app_helper.dart';
 import 'package:hares/utils/app_text.dart';
 import 'package:hares/utils/constants.dart';
 import 'package:hares/widget/custom_button.dart';
@@ -15,228 +18,291 @@ import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class RequestController extends GetxController {
+  late TextEditingController phoneController;
+  late TextEditingController linkController;
+  late TextEditingController companyNoController;
+  late TextEditingController nameController;
+  late TextEditingController addressController;
+
+  List<CategoryData> listCategories = [];
+
+  String? commercialRegisterPath;
+  String? facilityPath;
+  RxBool isLoading = false.obs;
+  String categorySelected = '';
+  int categoryId = 0;
 
   @override
   void onInit() {
+    phoneController = TextEditingController();
+    linkController = TextEditingController();
+    companyNoController = TextEditingController();
+    nameController = TextEditingController();
+    addressController = TextEditingController();
     super.onInit();
+  }
+
+  @override
+  void dispose() {
+    phoneController.dispose();
+    linkController.dispose();
+    companyNoController.dispose();
+    nameController.dispose();
+    addressController.dispose();
+    super.dispose();
+  }
+
+  Future<void> getCategories({int categoryId = 0}) async {
+    await APIRequestes.getCategories(categoryId: categoryId).then((data) {
+      if (data != null) {
+        listCategories.clear();
+        listCategories.addAll(data.result!.categories!);
+      }
+    });
+  }
+
+  void addCompany(BuildContext context) async {
+    isLoading(true);
+    await APIRequestes.addCompany(
+            companyName: nameController.text,
+            companyNo: companyNoController.text,
+            companyAddress: addressController.text,
+            phone: phoneController.text,
+            websiteLink: linkController.text,
+            categoryId: categoryId,
+            commercialRegisterImagePath: commercialRegisterPath ?? '',
+            imagePath: facilityPath ?? '')
+        .then((data) {
+      if (data != null) {
+        isLoading(false);
+        clearData();
+        AppHelper.showCustomToast(
+            context: context,
+            title: data.msg!,
+            textColor: Colors.white,
+            background: AppColors.lightGreen1);
+        update();
+      }else {
+        isLoading(false);
+      }
+    }, onError: (err) {
+      isLoading(false);
+    });
   }
 
   void showApplyAppSheet(BuildContext context) {
     showModalBottomSheet(
         context: context,
         builder: (con) => BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
-          child: Card(
-            elevation: 12,
-            shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(40),
-                    topRight: Radius.circular(40))),
-            child: Container(
-              height: 580,
-              padding:
-              const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(40),
-                      topRight: Radius.circular(40))),
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                child: Column(
-                  // mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
+              filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+              child: Card(
+                elevation: 12,
+                shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(40),
+                        topRight: Radius.circular(40))),
+                child: Container(
+                  height: 580,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(40),
+                          topRight: Radius.circular(40))),
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: Column(
+                      // mainAxisSize: MainAxisSize.min,
                       children: [
+                        Row(
+                          children: [
+                            AppText.medium(
+                                text: 'apply_app', fontWeight: FontWeight.w800),
+                            const Spacer(),
+                            GestureDetector(
+                              onTap: () => Navigator.pop(context),
+                              child: Container(
+                                alignment: AlignmentDirectional.centerEnd,
+                                margin:
+                                    const EdgeInsets.only(bottom: 8, top: 12),
+                                child: SvgPicture.asset(
+                                    '${Const.icons}icon_close.svg'),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 40),
                         AppText.medium(
-                            text: 'apply_app', fontWeight: FontWeight.w800),
-                        const Spacer(),
-                        GestureDetector(
-                          onTap: () => Navigator.pop(context),
-                          child: Container(
-                            alignment: AlignmentDirectional.centerEnd,
-                            margin:
-                            const EdgeInsets.only(bottom: 8, top: 12),
-                            child: SvgPicture.asset(
-                                '${Const.icons}icon_close.svg'),
+                            text: 'request_docs_for_number_link',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800),
+                        const SizedBox(height: 10),
+                        AppText.medium(
+                            text: 'enter_request_docs_for_number_link',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800),
+                        const SizedBox(height: 30),
+                        Container(
+                          decoration: BoxDecoration(
+                              color: AppColors.colorBG,
+                              borderRadius: BorderRadius.circular(18)),
+                          child: CustomTextField(
+                              controller: TextEditingController(),
+                              label: '',
+                              inputType: TextInputType.phone,
+                              hint: 'enter_number_here',
+                              isPassword: false,
+                              onValid: () {}),
+                        ),
+                        const SizedBox(height: 10),
+                        Container(
+                          decoration: BoxDecoration(
+                              color: AppColors.colorBG,
+                              borderRadius: BorderRadius.circular(18)),
+                          child: CustomTextField(
+                              controller: TextEditingController(),
+                              label: '',
+                              inputType: TextInputType.url,
+                              hint: 'enter_link_here',
+                              isPassword: false,
+                              onValid: () {}),
+                        ),
+                        const SizedBox(height: 30),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 14, horizontal: 10),
+                          decoration: BoxDecoration(
+                              color: AppColors.colorBG,
+                              borderRadius: BorderRadius.circular(18)),
+                          child: Row(
+                            children: [
+                              SvgPicture.asset(
+                                  '${Const.icons}icon_upload_file.svg'),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    AppText.medium(
+                                        text: 'upload_file',
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w700),
+                                    const SizedBox(height: 10),
+                                    AppText.medium(
+                                        text: 'upload_file_type',
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w700,
+                                        color: AppColors.colorTextMain),
+                                  ],
+                                ),
+                              ),
+                              SvgPicture.asset(
+                                  '${Const.icons}icon_download_file.svg'),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 40),
-                    AppText.medium(
-                        text: 'request_docs_for_number_link',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w800),
-                    const SizedBox(height: 10),
-                    AppText.medium(
-                        text: 'enter_request_docs_for_number_link',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w800),
-                    const SizedBox(height: 30),
-                    Container(
-                      decoration: BoxDecoration(
-                          color: AppColors.colorBG,
-                          borderRadius: BorderRadius.circular(18)),
-                      child: CustomTextField(
-                          controller: TextEditingController(),
-                          label: '',
-                          inputType: TextInputType.phone,
-                          hint: 'enter_number_here',
-                          isPassword: false,
-                          onValid: () {}),
-                    ),
-                    const SizedBox(height: 10),
-                    Container(
-                      decoration: BoxDecoration(
-                          color: AppColors.colorBG,
-                          borderRadius: BorderRadius.circular(18)),
-                      child: CustomTextField(
-                          controller: TextEditingController(),
-                          label: '',
-                          inputType: TextInputType.url,
-                          hint: 'enter_link_here',
-                          isPassword: false,
-                          onValid: () {}),
-                    ),
-                    const SizedBox(height: 30),
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                          vertical: 14, horizontal: 10),
-                      decoration: BoxDecoration(
-                          color: AppColors.colorBG,
-                          borderRadius: BorderRadius.circular(18)),
-                      child: Row(
-                        children: [
-                          SvgPicture.asset(
-                              '${Const.icons}icon_upload_file.svg'),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                AppText.medium(
-                                    text: 'upload_file',
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w700),
-                                const SizedBox(height: 10),
-                                AppText.medium(
-                                    text: 'upload_file_type',
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColors.colorTextMain),
-                              ],
-                            ),
+                        const SizedBox(height: 10),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 14, horizontal: 10),
+                          decoration: BoxDecoration(
+                              color: AppColors.colorBG,
+                              borderRadius: BorderRadius.circular(18)),
+                          child: Row(
+                            children: [
+                              SvgPicture.asset(
+                                  '${Const.icons}icon_upload_file.svg'),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    AppText.medium(
+                                        text: 'upload_image',
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w700),
+                                    const SizedBox(height: 10),
+                                    AppText.medium(
+                                        text: 'upload_image_type',
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w700,
+                                        color: AppColors.colorTextMain),
+                                  ],
+                                ),
+                              ),
+                              SvgPicture.asset(
+                                  '${Const.icons}icon_download_file.svg'),
+                            ],
                           ),
-                          SvgPicture.asset(
-                              '${Const.icons}icon_download_file.svg'),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                          vertical: 14, horizontal: 10),
-                      decoration: BoxDecoration(
-                          color: AppColors.colorBG,
-                          borderRadius: BorderRadius.circular(18)),
-                      child: Row(
-                        children: [
-                          SvgPicture.asset(
-                              '${Const.icons}icon_upload_file.svg'),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                AppText.medium(
-                                    text: 'upload_image',
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w700),
-                                const SizedBox(height: 10),
-                                AppText.medium(
-                                    text: 'upload_image_type',
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColors.colorTextMain),
-                              ],
-                            ),
-                          ),
-                          SvgPicture.asset(
-                              '${Const.icons}icon_download_file.svg'),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 30),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        AppText.medium(
-                            text: 'facility_location',
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.colorAppMain),
-                        CustomTextField(
-                            controller: TextEditingController(),
-                            label: '',
-                            inputType: TextInputType.streetAddress,
-                            hint: 'enter_facility_location',
-                            isPassword: false,
-                            icon: SvgPicture.asset(
-                              '${Const.icons}icon_location.svg',
-                              colorFilter: const ColorFilter.mode(
-                                  AppColors.colorAppMain,
-                                  BlendMode.srcATop),
-                              fit: BoxFit.scaleDown,
-                              height: 20,
-                              width: 20,
-                            ),
-                            onValid: () {})
+                        ),
+                        const SizedBox(height: 30),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            AppText.medium(
+                                text: 'facility_location',
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.colorAppMain),
+                            CustomTextField(
+                                controller: TextEditingController(),
+                                label: '',
+                                inputType: TextInputType.streetAddress,
+                                hint: 'enter_facility_location',
+                                isPassword: false,
+                                icon: SvgPicture.asset(
+                                  '${Const.icons}icon_location.svg',
+                                  colorFilter: const ColorFilter.mode(
+                                      AppColors.colorAppMain,
+                                      BlendMode.srcATop),
+                                  fit: BoxFit.scaleDown,
+                                  height: 20,
+                                  width: 20,
+                                ),
+                                onValid: () {})
+                          ],
+                        ),
+                        const SizedBox(height: 30),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            AppText.medium(
+                                text: 'phone_number',
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.colorAppMain),
+                            CustomTextField(
+                                controller: TextEditingController(),
+                                label: '',
+                                inputType: TextInputType.phone,
+                                hint: 'enter_phone_number',
+                                isPassword: false,
+                                icon: SvgPicture.asset(
+                                  '${Const.icons}icon_phone_field.svg',
+                                  colorFilter: const ColorFilter.mode(
+                                      AppColors.colorAppMain,
+                                      BlendMode.srcATop),
+                                  fit: BoxFit.scaleDown,
+                                  height: 20,
+                                  width: 20,
+                                ),
+                                onValid: () {})
+                          ],
+                        ),
+                        const SizedBox(height: 30),
+                        CustomButton(
+                            onPressed: () => Navigator.pop(context),
+                            label: 'continuation',
+                            background: AppColors.colorBlack,
+                            leading: SvgPicture.asset(
+                                '${Const.icons}icon_arrow.svg')),
+                        const SizedBox(height: 30),
                       ],
                     ),
-                    const SizedBox(height: 30),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        AppText.medium(
-                            text: 'phone_number',
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.colorAppMain),
-                        CustomTextField(
-                            controller: TextEditingController(),
-                            label: '',
-                            inputType: TextInputType.phone,
-                            hint: 'enter_phone_number',
-                            isPassword: false,
-                            icon: SvgPicture.asset(
-                              '${Const.icons}icon_phone_field.svg',
-                              colorFilter: const ColorFilter.mode(
-                                  AppColors.colorAppMain,
-                                  BlendMode.srcATop),
-                              fit: BoxFit.scaleDown,
-                              height: 20,
-                              width: 20,
-                            ),
-                            onValid: () {})
-                      ],
-                    ),
-                    const SizedBox(height: 30),
-                    CustomButton(
-                        onPressed: () => Navigator.pop(context),
-                        label: 'continuation',
-                        background: AppColors.colorBlack,
-                        leading: SvgPicture.asset(
-                            '${Const.icons}icon_arrow.svg')),
-                    const SizedBox(height: 30),
-                  ],
+                  ),
                 ),
               ),
-            ),
-          ),
-        ));
+            ));
   }
-
-  String? commercialRegisterPath;
-  String? facilityPath;
 
   void requestStoragePermission({required String pickImageFrom}) async {
     if (await Permission.storage.isDenied) {
@@ -258,7 +324,7 @@ class RequestController extends GetxController {
   void pickCommercialRegister() async {
     final picker = ImagePicker();
     XFile? xFile =
-    await picker.pickImage(source: ImageSource.gallery, imageQuality: 70);
+        await picker.pickImage(source: ImageSource.gallery, imageQuality: 70);
     if (xFile != null) {
       commercialRegisterPath = xFile.path;
       log('IMAGE PATH: $commercialRegisterPath');
@@ -269,11 +335,21 @@ class RequestController extends GetxController {
   void pickFacilityPhoto() async {
     final picker = ImagePicker();
     XFile? xFile =
-    await picker.pickImage(source: ImageSource.gallery, imageQuality: 70);
+        await picker.pickImage(source: ImageSource.gallery, imageQuality: 70);
     if (xFile != null) {
       facilityPath = xFile.path;
       log('IMAGE PATH: $facilityPath');
       update();
     }
+  }
+
+  void clearData() {
+    phoneController.clear();
+    linkController.clear();
+    companyNoController.clear();
+    nameController.clear();
+    addressController.clear();
+    commercialRegisterPath = null;
+    facilityPath = null;
   }
 }

@@ -39,7 +39,7 @@ class LoginScreen extends StatelessWidget {
                 const SizedBox(height: 14),
                 AppText.medium(text: 'login', fontSize: 16, color: AppColors.colorTextSub),
                 const SizedBox(height: 25),
-                Container(
+                /*Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                   decoration: BoxDecoration(
                       color: AppColors.lightGray4,
@@ -77,7 +77,7 @@ class LoginScreen extends StatelessWidget {
                       ))).toList(),
                     ),
                   ),
-                ),
+                ),*/
                 const SizedBox(height: 40),
                 GetBuilder<LoginController>(builder: (controller) => Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,7 +113,18 @@ class LoginScreen extends StatelessWidget {
                         onChange: (value) => null)),
                   ],
                 ),
-
+                Align(
+                  alignment: AlignmentDirectional.topEnd,
+                  child: TextButton(
+                    onPressed: () {
+                      Get.toNamed(Routes.forgetPassword);
+                    },
+                    child: AppText.medium(
+                        text: 'forget_password',
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.colorBlack),
+                  ),
+                ),
                 const SizedBox(height: 16),
                 Row(
                   children: [
@@ -133,11 +144,17 @@ class LoginScreen extends StatelessWidget {
                       },
                     )),
                     const SizedBox(width: 16),
-                    Expanded(child: AppText.medium(text: 'click_continue_to_policy', maxline: 3))
+                    Expanded(child: GestureDetector(
+                        onTap: () {
+                          _controller.isCheck = !_controller.isCheck;
+                          _controller.update();
+                        },
+                        child: AppText.medium(text: 'click_continue_to_policy', maxline: 3)))
                   ],
                 ),
                 const SizedBox(height: 30),
-                CustomButton(onPressed: () {
+                CustomButton(
+                    onPressed: () {
                   String email = _controller.emailPhoneController.text;
                   String password = _controller.passwordController.text;
                   if (email.isEmpty) {
@@ -155,7 +172,7 @@ class LoginScreen extends StatelessWidget {
                   } else {
 
                   if (_controller.isCheck) {
-                    _controller.login();
+                    _controller.login(context);
                   } else if (password.isEmpty) {
                     AppHelper.showCustomToast(
                         context: context,
@@ -191,9 +208,9 @@ class LoginScreen extends StatelessWidget {
                 const SizedBox(height: 30),
                 Column(
                   children: [
-                    AppText.medium(text: 'or_register_via', fontWeight: FontWeight.w700),
+                    // AppText.medium(text: 'or_register_via', fontWeight: FontWeight.w700),
                     const SizedBox(height: 35),
-                    Row(
+                    /*Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         SvgPicture.asset('${Const.icons}icon_facebook.svg'),
@@ -202,8 +219,8 @@ class LoginScreen extends StatelessWidget {
                         const SizedBox(width: 10),
                         SvgPicture.asset('${Const.icons}icon_apple.svg'),
                       ],
-                    ),
-                    const SizedBox(height: 10),
+                    ),*/
+                    // const SizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

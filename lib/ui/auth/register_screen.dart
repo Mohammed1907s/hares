@@ -68,6 +68,19 @@ class RegisterScreen extends StatelessWidget {
 
                     const SizedBox(height: 18),
 
+                    AppText.medium(text:'phone_number', fontWeight: FontWeight.w800, color: AppColors.colorAppMain),
+                    CustomTextField(
+                        controller: controller.phoneController,
+                        label: 'enter_phone_number',
+                        inputType: TextInputType.phone,
+                        hint: 'enter_phone_number',
+                        isPassword: false,
+                        icon: SvgPicture.asset('${Const.icons}icon_phone_field.svg', colorFilter: const ColorFilter.mode(AppColors.colorAppMain, BlendMode.srcATop),fit: BoxFit.scaleDown, height: 20, width: 20,),
+                        onChange: (value) => null,
+                        onValid: () {}),
+
+                    const SizedBox(height: 18),
+
                     AppText.medium(text: 'password', fontWeight: FontWeight.w800, color: AppColors.colorAppMain),
                     GetBuilder<RegisterController>(builder: (controller) => CustomTextField(
                         controller: controller.passwordController,
@@ -172,9 +185,9 @@ class RegisterScreen extends StatelessWidget {
                 const SizedBox(height: 30),
                 Column(
                   children: [
-                    AppText.medium(text: 'or_register_via', fontWeight: FontWeight.w700),
+                    // AppText.medium(text: 'or_register_via', fontWeight: FontWeight.w700),
                     const SizedBox(height: 35),
-                    Row(
+                    /*Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         SvgPicture.asset('${Const.icons}icon_facebook.svg'),
@@ -183,8 +196,8 @@ class RegisterScreen extends StatelessWidget {
                         const SizedBox(width: 10),
                         SvgPicture.asset('${Const.icons}icon_apple.svg'),
                       ],
-                    ),
-                    const SizedBox(height: 10),
+                    ),*/
+                    // const SizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

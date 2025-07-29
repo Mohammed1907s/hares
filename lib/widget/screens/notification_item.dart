@@ -3,12 +3,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:hares/controllers/notifications_controller.dart';
 import 'package:hares/models/notification_test.dart';
+import 'package:hares/models/notifications.dart';
 import 'package:hares/utils/app_color.dart';
 import 'package:hares/utils/app_text.dart';
 import 'package:hares/utils/constants.dart';
 
 class NotificationItem extends StatelessWidget {
-  final NotificationTest notification;
+  final NotificationData notification;
   final _controller = Get.put(NotificationsController());
   NotificationItem({super.key, required this.notification});
 
@@ -27,23 +28,23 @@ class NotificationItem extends StatelessWidget {
           children: [
             Row(
               children: [
-                SvgPicture.asset(notification.icon),
+                // SvgPicture.asset(notification.icon),
                 const Spacer(),
-                AppText.medium(text: notification.date, color: AppColors.colorTextSub1)
+                AppText.medium(text: notification.time ?? '', color: AppColors.colorTextSub1)
               ],
             ),
             const SizedBox(height: 16),
-            AppText.medium(text: notification.title, fontWeight: FontWeight.w700),
+            AppText.medium(text: notification.notificationText ?? '', fontWeight: FontWeight.w700),
             Row(
               children: [
-                AppText.medium(text: notification.status, color: notification.color, fontWeight: FontWeight.w500),
+                // AppText.medium(text: notification.status, color: notification.color, fontWeight: FontWeight.w500),
                 const SizedBox(width: 4),
                 const CircleAvatar(
                   radius: 3,
                   backgroundColor: AppColors.colorTextSub2,
                 ),
                 const SizedBox(width: 4),
-                AppText.medium(text: notification.statusDetails, color: AppColors.colorTextSub1, fontWeight: FontWeight.w500),
+                AppText.medium(text: notification.type ?? '', color: AppColors.colorTextSub1, fontWeight: FontWeight.w500),
               ],
             ),
             const SizedBox(height: 16),
@@ -51,8 +52,8 @@ class NotificationItem extends StatelessWidget {
               onTap: () => _controller.showRateSheet(context),
               child: Row(
                 children: [
-                  AppText.medium(text:
-                      notification.action, color: AppColors.colorTextSub1, fontWeight: FontWeight.w500),
+                  // AppText.medium(text:
+                  //     notification.action, color: AppColors.colorTextSub1, fontWeight: FontWeight.w500),
                   const SizedBox(width: 6),
                   SvgPicture.asset('${Const.icons}icon_arrow_grey.svg'),
                   const Spacer(),

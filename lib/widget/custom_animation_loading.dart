@@ -29,7 +29,7 @@ class CustomAnimationLoading extends StatelessWidget {
         width: width,
         height: height,
         decoration: BoxDecoration(
-          color: AppColors.colorAppMain,
+
           borderRadius: BorderRadius.circular(14)
         ),
         child: LoadingAnimationWidget.fourRotatingDots(color: color, size: size));

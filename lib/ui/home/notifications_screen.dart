@@ -6,6 +6,7 @@ import 'package:hares/models/type_slected.dart';
 import 'package:hares/utils/app_color.dart';
 import 'package:hares/utils/app_text.dart';
 import 'package:hares/utils/constants.dart';
+import 'package:hares/widget/custom_animation_loading.dart';
 import 'package:hares/widget/screens/notification_item.dart';
 
 class NotificationsScreen extends StatelessWidget {
@@ -78,11 +79,19 @@ class NotificationsScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              ListView.builder(
-                shrinkWrap: true,
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: _controller.listNotifications.length,
-                  itemBuilder: (context, index) => NotificationItem(notification: _controller.listNotifications[index]))
+              FutureBuilder(future: _controller.getNotifications(), builder: (context, snapshot) {
+                if(snapshot.connectionState == ConnectionState.done){
+                  return ListView.builder(
+                      shrinkWrap: true,
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: _controller.listNotifications.length,
+                      itemBuilder: (context, index) => NotificationItem(notification: _controller.listNotifications[index]));
+                }else if(snapshot.connectionState == ConnectionState.waiting){
+                  return const Center(child: CustomAnimationLoading(color: AppColors.colorAppSub));
+                }else {
+                  return Container();
+                }
+              })
 
             ],
           ),

@@ -1,15 +1,19 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:hares/controllers/home_page_controller.dart';
+import 'package:hares/models/categories.dart';
 import 'package:hares/models/type_slected.dart';
 import 'package:hares/routes/routes.dart';
 import 'package:hares/utils/app_color.dart';
 import 'package:hares/utils/app_helper.dart';
 import 'package:hares/utils/app_text.dart';
 import 'package:hares/utils/constants.dart';
+import 'package:hares/widget/custom_animation_loading.dart';
+import 'package:hares/widget/custom_cached_image.dart';
 import 'package:hares/widget/screens/numbers_links_item.dart';
 
 class HomePage extends StatelessWidget {
@@ -20,6 +24,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     log('TOKEN: ${AppHelper.getUserToken()}');
+    log('USER: ${jsonEncode(AppHelper.getCurrentUser())}');
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -27,7 +32,7 @@ class HomePage extends StatelessWidget {
         toolbarHeight: 10,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
           child: Column(
@@ -39,9 +44,15 @@ class HomePage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(18)),
                 child: Row(
                   children: [
-                    const CircleAvatar(
-                      radius: 30,
-                      backgroundImage: NetworkImage(Const.imageUrl),
+                    CircleAvatar(
+                      radius: 28,
+                      child: Container(
+                          clipBehavior: Clip.antiAlias,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadiusDirectional.circular(50)
+                          ),
+                          child: CustomCachedImage(imageUrl: AppHelper.getCurrentUser()!.imageUrl ?? Const.appLogo)
+                      ),
                     ),
                     const SizedBox(width: 12),
                     GestureDetector(
@@ -66,45 +77,61 @@ class HomePage extends StatelessWidget {
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 physics: const BouncingScrollPhysics(),
-                child: Row(
-                  children: _controller.types
-                      .map((type) => GetBuilder<HomePageController>(
+                child: FutureBuilder(future: _controller.getCategories(), builder: (context, snapshot) {
+                  if(snapshot.connectionState == ConnectionState.done){
+                    return Row(
+                      children: _controller.listCategories
+                          .map((category) => GetBuilder<HomePageController>(
                           builder: (controller) => GestureDetector(
-                                onTap: () {
-                                  for (TypeSelected selected
-                                      in controller.types) {
-                                    selected.isSelected = false;
-                                  }
-                                  type.isSelected = true;
-                                  controller.typeSelected = type.value;
-                                  controller.update();
-                                },
-                                child: Container(
-                                  height: 74,
-                                  width: 81,
-                                  margin:
-                                      const EdgeInsets.symmetric(horizontal: 10),
-                                  decoration: BoxDecoration(
-                                      color: type.isSelected
-                                          ? AppColors.colorAppMain
-                                          : AppColors.colorBG,
-                                      borderRadius: BorderRadius.circular(18)),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      SvgPicture.asset(type.icon, colorFilter:  type.isSelected ? const ColorFilter.mode(AppColors.colorWhite , BlendMode.srcATop) : null),
-                                      const SizedBox(height: 8),
-                                      AppText.medium(
-                                          text: type.title,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w700,
-                                      color: type.isSelected ? AppColors.colorWhite : AppColors.colorBlack)
-                                    ],
-                                  ),
-                                ),
-                              )))
-                      .toList(),
-                ),
+                            onTap: () {
+                              for (CategoryData selected in controller.listCategories) {
+                                selected.isSelected = false;
+                              }
+                              category.isSelected = true;
+                              controller.categorySelected = category.name!;
+                              controller.categoryId = category.id!;
+                              log('Category: Name =>  ${controller.categorySelected}: Id => ${controller.categoryId}');
+                              // if(controller.categoryId == 1){
+                              //   _controller.getLinksPhoneCompany(categoryId: 0);
+                              // }else {
+                              //
+                              // }
+                              _controller.getPhones(categoryId: controller.categoryId);
+                              _controller.getLinks(categoryId: controller.categoryId);
+                              controller.update();
+                            },
+                            child: Container(
+                              height: 74,
+                              width: 81,
+                              margin:
+                              const EdgeInsets.symmetric(horizontal: 10),
+                              decoration: BoxDecoration(
+                                  color: category.isSelected
+                                      ? AppColors.colorAppMain
+                                      : AppColors.colorBG,
+                                  borderRadius: BorderRadius.circular(18)),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SvgPicture.network(category.imageUrl ?? '', colorFilter:  category.isSelected ? const ColorFilter.mode(AppColors.colorWhite , BlendMode.srcATop) : null),
+                                  const SizedBox(height: 8),
+                                  AppText.medium(
+                                      text: category.name ?? '',
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w700,
+                                      color: category.isSelected ? AppColors.colorWhite : AppColors.colorBlack)
+                                ],
+                              ),
+                            ),
+                          )))
+                          .toList(),
+                    );
+                  }else if(snapshot.connectionState == ConnectionState.waiting){
+                    return const Center(child: CustomAnimationLoading(color: AppColors.colorAppSub));
+                  }else {
+                    return Container();
+                  }
+                }),
               ),
               const SizedBox(height: 28),
               Row(
@@ -115,11 +142,19 @@ class HomePage extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 20),
-              GetBuilder<HomePageController>(builder: (controller) => ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: _controller.getItemNumbersCounts(),
-                  itemBuilder: (context, index) => NumbersLinksItem(numberLink: _controller.getListNumbersType()[index]))),
+              FutureBuilder(future: _controller.getPhones(), builder: (context, snapshot) {
+                if(snapshot.connectionState == ConnectionState.done){
+                  return GetBuilder<HomePageController>(builder: (controller) => ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: _controller.listPhones.length,
+                      itemBuilder: (context, index) => NumbersLinksItem(numberLink: _controller.listPhones[index])));
+                }else if(snapshot.connectionState == ConnectionState.waiting){
+                  return const Center(child: CustomAnimationLoading(color: AppColors.colorAppSub));
+                }else {
+                  return Container();
+                }
+              }),
               const SizedBox(height: 20),
               Row(
                 children: [
@@ -129,11 +164,19 @@ class HomePage extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 20),
-              GetBuilder<HomePageController>(builder: (controller) => ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: _controller.getItemLinksCounts(),
-                  itemBuilder: (context, index) => NumbersLinksItem(numberLink: _controller.getListLinksType()[index]))),
+              FutureBuilder(future: _controller.getLinks(), builder: (context, snapshot) {
+                if(snapshot.connectionState == ConnectionState.done){
+                  return GetBuilder<HomePageController>(builder: (controller) => ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: _controller.listLinks.length,
+                      itemBuilder: (context, index) => NumbersLinksItem(numberLink: _controller.listLinks[index])));
+                }else if(snapshot.connectionState == ConnectionState.waiting){
+                  return const Center(child: CustomAnimationLoading(color: AppColors.colorAppSub));
+                }else {
+                  return Container();
+                }
+              }),
 
             ],
           ),

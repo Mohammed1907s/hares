@@ -12,18 +12,23 @@ class Const {
   static const String boarding2 = 'https://i.postimg.cc/fTP2RfWW/boarding12.png';
   static const String boarding3 = 'https://i.postimg.cc/Bn1hLPtT/boarding13.png';
 
-  static const String appLogo = 'https://i.postimg.cc/Nf1vBGsn/05.png';
-  static const String appLogo1 = 'https://i.postimg.cc/pLMZcVhC/app-logo1.jpg';
+  static const String appLogo = 'https://i.postimg.cc/8zGpNztR/logo.png';
+  static const String appLogo1 = 'https://i.postimg.cc/8zGpNztR/logo.png';
   static const String imageUrl =
       'https://i.postimg.cc/L4TFGmQS/free-photo-of-smiling-woman-in-door.jpg';
 
   // TODO Keys Preferences
   static const String KEY_BOARDING = 'boarding';
-  static const String KEY_BOARDING_DATA = 'boarding_data';
   static const String KEY_USER_DATA = 'user_data';
   static const String KEY_USER_TOKEN = 'user_token';
+  static const String KEY_VERIFIED_TOKEN = 'verified_token';
+  static const String KEY_VERIFIED_EMAIL = 'verified_email';
   static const String KEY_FCM_TOKEN = 'fcm_token';
-  static const String KEY_USER_TYPE = 'user_type';
+
+  // TODO TEXT CONFIRM FROM
+  static const String KEY_TEXT_CONFIRM = 'text_confirm';
+  static const String KEY_TEXT_CONFIRM_PASSWORD = 'from_password';
+  static const String KEY_TEXT_CONFIRM_REGISTER = 'from_register';
 
   static const String KEY_LOGIN_TYPE = 'login_type';
   static const String KEY_LOGIN_TYPE_MOBILE = 'mobile';

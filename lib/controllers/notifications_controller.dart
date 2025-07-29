@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:hares/api/api_requestes.dart';
 import 'package:hares/models/notification_test.dart';
+import 'package:hares/models/notifications.dart';
 import 'package:hares/models/type_slected.dart';
 import 'package:hares/utils/app_color.dart';
 import 'package:hares/utils/app_text.dart';
@@ -21,7 +23,9 @@ class NotificationsController extends GetxController {
     TypeSelected(title: 'links',value: 'suspicious', icon: '${Const.icons}icon_link.svg', isSelected: false),
   ];
 
-  List<NotificationTest> listNotifications = [
+  List<NotificationData> listNotifications = [];
+
+ /* List<NotificationTest> listNotifications = [
 
     NotificationTest(
         icon: '${Const.icons}icon_notif.svg',
@@ -88,7 +92,7 @@ class NotificationsController extends GetxController {
         deleteIcon: '${Const.icons}icon_delete.svg',
         color: AppColors.colorAppSub,
         type: 'all')
-  ];
+  ];*/
 
   void showDeleteAllSheet(BuildContext context) {
     showModalBottomSheet(
@@ -305,6 +309,16 @@ class NotificationsController extends GetxController {
             ),
           ),
         ));
+  }
+
+  Future<void> getNotifications() async {
+    await APIRequestes.getNotifications()
+        .then((data) {
+          if(data != null){
+            listNotifications.clear();
+            listNotifications.addAll(data.result!.notifications!);
+          }
+    });
   }
 
 }

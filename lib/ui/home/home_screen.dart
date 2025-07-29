@@ -15,7 +15,7 @@ class HomeScreen extends StatelessWidget {
               backgroundColor: Colors.white,
               body: controller.screens[controller.navIndex],
               bottomNavigationBar: Container(
-                height: 80,
+                height: 100,
                 margin: const EdgeInsets.all(10),
                 clipBehavior: Clip.antiAlias,
                 decoration: BoxDecoration(

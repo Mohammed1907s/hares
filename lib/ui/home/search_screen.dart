@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:hares/controllers/home_page_controller.dart';
 import 'package:hares/controllers/verify_controller.dart';
+import 'package:hares/ui/home/pages/home_page.dart';
 import 'package:hares/utils/app_color.dart';
 import 'package:hares/utils/app_text.dart';
 import 'package:hares/utils/constants.dart';
 import 'package:hares/widget/custom_text_field.dart';
 import 'package:hares/widget/screens/numbers_links_item.dart';
+import 'package:hares/widget/screens/report_item.dart';
 
 class SearchScreen extends StatelessWidget {
-  final _controller = Get.put(VerifyController());
+  final _controller = Get.put(HomePageController());
   SearchScreen({super.key});
 
   @override
@@ -30,32 +33,46 @@ class SearchScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                 decoration: BoxDecoration(
-                    color: AppColors.colorBG,
+                    // color: AppColors.colorBG,
                     borderRadius: BorderRadius.circular(18)),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                        child: SvgPicture.asset('${Const.icons}icon_back.svg')),
+                    Container(
+                      margin: const EdgeInsets.only(top: 12),
+                      child: GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                          child: SvgPicture.asset('${Const.icons}icon_back.svg')),
+                    ),
                     const SizedBox(width: 12),
-                    Expanded(child: AppText.medium(text: 'enter_search_number_link', fontSize: 14)),
-                    // Expanded(child: CustomTextField(controller: TextEditingController(), label: '', hint: 'enter_search_number_link', onValid: (search) {})),
-                    const SizedBox(width: 16),
-                    SvgPicture.asset('${Const.icons}icon_camera.svg'),
-                    const SizedBox(width: 16),
+                    Expanded(
+                      child: CustomTextField(
+                          controller: _controller.searchController,
+                          label: 'enter_search_number_link',
+                          inputType: TextInputType.text,
+                          hint: 'enter_search_number_link',
+                          isPassword: false,
+                          borderRadius: 20,
+                          borderColor: AppColors.colorTextSub1,
+                          onChange: (word) {
+                            _controller.getPhones(search: word.toString());
+                            _controller.update();
+                          },
+                          onValid: () {}),
+                    ),
+
                   ],
                 ),
               ),
               const SizedBox(height: 28),
               AppText.medium(text: 'search_history', fontSize: 14, fontWeight: FontWeight.w800),
               const SizedBox(height: 20),
-              ListView.builder(
+              GetBuilder<HomePageController>(builder: (controller) => ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: _controller.listVerify.length,
-                  itemBuilder: (context, index) => NumbersLinksItem(numberLink: _controller.listVerify[index]))
+                  itemCount: _controller.listPhones.length,
+                  itemBuilder: (context, index) => NumbersLinksItem(numberLink: _controller.listPhones[index])))
             ],
           ),
         ),

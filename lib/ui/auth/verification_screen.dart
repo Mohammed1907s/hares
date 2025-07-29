@@ -7,6 +7,7 @@ import 'package:hares/utils/app_color.dart';
 import 'package:hares/utils/app_helper.dart';
 import 'package:hares/utils/app_text.dart';
 import 'package:hares/utils/constants.dart';
+import 'package:hares/widget/custom_animation_loading.dart';
 import 'package:hares/widget/custom_button.dart';
 import 'package:pin_input_text_field/pin_input_text_field.dart';
 
@@ -38,13 +39,13 @@ class VerificationScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(height: 80),
+            const SizedBox(height: 30),
             SvgPicture.asset(loginType == Const.KEY_LOGIN_TYPE_MOBILE ? '${Const.icons}icon_verification_phone.svg' : '${Const.icons}icon_verification_email.svg'),
             const SizedBox(height: 20),
             AppText.medium(text: loginType == Const.KEY_LOGIN_TYPE_MOBILE ? 'mobile_number_verification' : 'email_verification', fontWeight: FontWeight.w800, fontSize: 20),
             const SizedBox(height: 16),
             AppText.medium(text: loginType == Const.KEY_LOGIN_TYPE_MOBILE ? 'enter_code_to_send_mobile' : 'enter_code_to_send_email', fontWeight: FontWeight.w400, fontSize: 18, color: AppColors.colorTextSub),
-            const SizedBox(height: 80),
+            const SizedBox(height: 30),
             PinInputTextField(
                 controller: _controller.codeController,
                 textInputAction: TextInputAction.go,
@@ -52,7 +53,7 @@ class VerificationScreen extends StatelessWidget {
                 keyboardType: TextInputType.number,
                 cursor: _buildVerticalCursor(),
                 textCapitalization: TextCapitalization.characters,
-                pinLength: 4,
+                pinLength: 6,
                 focusNode: FocusNode(),
                 decoration: UnderlineDecoration(
                   textStyle: const TextStyle(
@@ -76,9 +77,17 @@ class VerificationScreen extends StatelessWidget {
                 enableInteractiveSelection: false),
             const SizedBox(height: 80),
             CustomButton(onPressed: () {
-              Get.toNamed(Routes.home);
+              String smsCode = _controller.codeController.text;
+              if(smsCode.isEmpty){
+                AppHelper.showCustomToast(
+                    context: context,
+                    title: 'please_enter_code_sent_for_you',
+                    textColor: Colors.white,
+                    background: AppColors.colorTextError);
+              }
+              _controller.checkSMS(context, code: smsCode);
             }, label: 'continuation', leading: SvgPicture.asset('${Const.icons}icon_arrow.svg')),
-            const SizedBox(height: 100),
+            const SizedBox(height: 50),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -88,7 +97,7 @@ class VerificationScreen extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).colorScheme.onSurface),
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () => _controller.resendCode(context),
                   child: AppText.medium(
                       text: 'resend_code',
                       fontSize: 16,
@@ -96,7 +105,10 @@ class VerificationScreen extends StatelessWidget {
                       color: AppColors.colorAppMain),
                 )
               ],
-            )
+            ),
+            Obx(() => _controller.isLoading.isTrue
+                ? const CustomAnimationLoading(color: AppColors.colorAppSub)
+                : Container())
           ],
         ),
       ),

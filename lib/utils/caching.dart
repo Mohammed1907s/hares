@@ -2,6 +2,7 @@ import 'dart:convert';
 
 
 import 'package:get/get.dart';
+import 'package:hares/models/user.dart';
 import 'package:hares/utils/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -31,6 +32,19 @@ class Caching extends GetxService {
 
   static dynamic getUserToken({required String key}) {
     return _sharedPreferences.get(key);
+  }
+
+  static Future<dynamic> saveUserData({ required User user}) async {
+    return await _sharedPreferences.setString(Const.KEY_USER_DATA, jsonEncode(user));
+  }
+
+  static User getUserData({required String key}) {
+    User user = User();
+    String? userDataJson = _sharedPreferences.getString(key);
+    if (userDataJson != null) {
+      user = User.fromJson(jsonDecode(userDataJson));
+    }
+    return user;
   }
 
   static Future<bool> saveAppLanguage(
