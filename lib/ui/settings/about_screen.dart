@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:hares/controllers/settings_controller.dart';
@@ -28,11 +29,26 @@ class AboutScreen extends StatelessWidget {
             const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
             child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
-                child: AppText.medium(
-                    text: _controller.aboutUs.description ?? '',
-                    maxline: 100,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700)),
+                child: Html(
+                  data: _controller.policy.description ?? '',
+                  extensions: [
+                    TagExtension(
+                      tagsToExtend: {"flutter"},
+                      child: const FlutterLogo(),
+                    ),
+                  ],
+                  style: {
+                    "LamaSans": Style(
+                      textAlign: TextAlign.center,
+                      padding: HtmlPaddings.all(8),
+                      backgroundColor: Colors.black,
+                      margin: Margins(left: Margin(50, Unit.px), right: Margin.auto()),
+                      width: Width(300, Unit.px),
+                      fontWeight: FontWeight.w700,
+                    ),
+                  },
+                )
+            ),
           );
         }else if(snapshot.connectionState == ConnectionState.waiting){
           return const Center(child: CustomAnimationLoading(color: AppColors.colorAppSub));

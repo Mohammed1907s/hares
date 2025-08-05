@@ -144,14 +144,30 @@ class LoginScreen extends StatelessWidget {
                       },
                     )),
                     const SizedBox(width: 16),
-                    Expanded(child: GestureDetector(
+                    Expanded(
+                      child: GestureDetector(
                         onTap: () {
-                          _controller.isCheck = !_controller.isCheck;
-                          _controller.update();
+                          Get.toNamed(Routes.policy);
                         },
-                        child: AppText.medium(text: 'click_continue_to_policy', maxline: 3)))
+                        child: RichText(
+                          text: const TextSpan(
+                            text: 'بالنقر فوق "إستمرار"، فإنك توافق على ',
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold
+                            ),
+                            children:[
+                              TextSpan(text: 'الشروط والأحكام وسياسة الخصوصية للتطبيق.', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.blue)),
+                              TextSpan(text: ''),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
+
                 const SizedBox(height: 30),
                 CustomButton(
                     onPressed: () {
