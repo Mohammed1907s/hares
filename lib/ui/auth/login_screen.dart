@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -145,23 +146,56 @@ class LoginScreen extends StatelessWidget {
                     )),
                     const SizedBox(width: 16),
                     Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          Get.toNamed(Routes.policy);
-                        },
-                        child: RichText(
-                          text: const TextSpan(
-                            text: 'بالنقر فوق "إستمرار"، فإنك توافق على ',
-                            style: TextStyle(
+                      child: RichText(
+                        text: TextSpan(
+                          text: 'بالنقر فوق "إستمرار"، فإنك توافق على ',
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: 'الشروط والأحكام',
+                              style: const TextStyle(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  Get.toNamed(Routes.terms);
+                                },
+                            ),
+                            const TextSpan(
+                              text: ' و ',
+                              style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 14,
-                                fontWeight: FontWeight.bold
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                            children:[
-                              TextSpan(text: 'الشروط والأحكام وسياسة الخصوصية للتطبيق.', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.blue)),
-                              TextSpan(text: ''),
-                            ],
-                          ),
+                            TextSpan(
+                              text: 'سياسة الخصوصية',
+                              style: const TextStyle(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  Get.toNamed(Routes.policy);
+                                },
+                            ),
+                            const TextSpan(
+                              text: ' للتطبيق.',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
